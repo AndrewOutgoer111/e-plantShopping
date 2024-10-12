@@ -1,37 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const CartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState: {
-    items: {}, // Initialize items as an empty object to track items by name or ID
+    items: [], // Initialize items as an empty array
   },
   reducers: {
     addItem: (state, action) => {
-      const item = action.payload;
+      const { name, image, cost } = action.payload;
+      const existingItem = state.items.find((item) => item.name === name);
 
-      // Check if the item already exists in the cart
-      if (state.items[item.name]) {
-        // If it exists, increment the quantity
-        state.items[item.name].quantity += 1;
+      if (existingItem) {
+        existingItem.quantity++;
       } else {
-        // If it doesn't exist, add the item to the cart with quantity 1
-        state.items[item.name] = { ...item, quantity: 1 };
+        state.items.push({ name, image, cost, quantity: 1 });
       }
     },
     removeItem: (state, action) => {
-      const itemName = action.payload;
-
-      // Remove the item from the cart if it exists
-      if (state.items[itemName]) {
-        delete state.items[itemName];
-      }
+      state.items = state.items.filter((item) => item.name !== action.payload);
     },
     updateQuantity: (state, action) => {
-      const { itemName, quantity } = action.payload;
+      const { name, quantity } = action.payload;
+      const itemToUpdate = state.items.find((item) => item.name === name);
 
-      // Update the quantity of an existing item
-      if (state.items[itemName]) {
-        state.items[itemName].quantity = quantity;
+      if (itemToUpdate) {
+        itemToUpdate.quantity = quantity;
       }
     },
   },
